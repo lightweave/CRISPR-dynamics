@@ -1,10 +1,17 @@
 # before use run in command shell:
 # pip install pipenv
 # pipenv install requests
+# pipenv install BeautifulSoup
 # pipenv install lxml
+# pip install BeautifulSoup
+# pip install beautifulsoup4
+# pip install lxml
 
 import requests
 import re
+from bs4 import BeautifulSoup
+
+
 
 #r = requests.get('http://immunet.cn/hmmcas') # this is optional
 
@@ -19,7 +26,7 @@ print("request to "+ url)
 files = {'uploadfile': open('NC_016025.faa', 'rb')}
 r = requests.post(url, files=files) 
 
-##############3##
+#################
 #print(r.text)
 #print(r.status_code)
 
@@ -35,13 +42,17 @@ if len(matches):
 
 	url2 = matches[0]
 
-	table = requests.get(url2)
+	r = requests.get(url2)
 
 
 
-from BeautifulSoup import BeautifulSoup
 
-soup = BeautifulSoup(table)
+
+from bs4 import BeautifulSoup
+
+print(r.text)
+
+soup = BeautifulSoup(r.text, "lxml")
 
 for row in soup.findAll('table')[0].tbody.findAll('tr'):
     first_column = row.findAll('th')[0].contents
@@ -52,12 +63,12 @@ for row in soup.findAll('table')[0].tbody.findAll('tr'):
 
 
 # from lxml import etree
-# 	parser = etree.HTMLParser()
-# 	tree = etree.fromstring(table, parser)
-# 	results = tree.xpath('//tr/td[position()=2]')
+# parser = etree.HTMLParser()
+# tree = etree.fromstring(table, parser)
+# results = tree.xpath('//tr/td[position()=2]')
 
-# 	print 'Column 2\n========'
-# 	for r in results:
-# 	    print r.text
+# print ('Column 2\n========')
+# for r in results:
+#     print (r.text)
 
 
