@@ -4,7 +4,7 @@
 
 import requests
 import re
-
+from lxml import etree
 
 r = requests.get('http://immunet.cn/hmmcas') # this is optional
 
@@ -13,10 +13,16 @@ payload = {'sequence': '>gi|347755963|ref|YP_004863525.1| hypothetical protein [
 			'key2': 'value2'}
 
 print("request to "+ url)		
-r = requests.post(url, data=payload)
+#r = requests.post(url, data=payload)
 
+################# alernate
+files = {'uploadfile': open('NC_016025.faa', 'rb')}
+r = requests.post(url, files=files) 
 
+##############3##
 #print(r.text)
+#print(r.status_code)
+
 
 
 # button for:
@@ -24,16 +30,21 @@ r = requests.post(url, data=payload)
 #url2 = "http://i.uestc.edu.cn/hmmcas/operon.php?qsf=ToSlide031405&tb=Table031405&sp=3"
 # Search links on buttons:
 matches = re.findall("(http\:\/\/i\.uestc\.edu\.cn\/hmmcas\/operon\.php\?qsf=ToSlide.\d+\&tb=Table\d+\&sp=3)", r.text)
+if len(matches):
+	print("found " + matches[0])
+else:
+	return
+url2 = matches[0]
 
-print("found " + matches[1])
-
-url2 = matches[1]
-
-r = requests.get(url2)
+table = requests.get(url2)
 
 
 
-################# alernate
-#url = 'http://immunet.cn/hmmcas'
-#files = {'file': open('testgenom.txt', 'rb')}
-#r = requests.post(url, files=files) 
+parser = etree.HTMLParser()
+tree = etree.fromstring(table, parser)
+results = tree.xpath('//tr/td[position()=2]')
+
+print 'Column 2\n========'
+for r in results:
+    print r.text
+
