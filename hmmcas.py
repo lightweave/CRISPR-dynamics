@@ -28,6 +28,9 @@ r = requests.post(url, files=files)
 
 #################
 #print(r.text)
+text_file = open("Output1.html", "w")
+text_file.write(r.text)
+text_file.close()
 #print(r.status_code)
 
 
@@ -51,6 +54,10 @@ if len(matches):
 from bs4 import BeautifulSoup
 
 print(r.text)
+
+text_file = open("Output2.html", "w")
+text_file.write(r.text)
+text_file.close()
 
 soup = BeautifulSoup(r.text, "lxml")
 
