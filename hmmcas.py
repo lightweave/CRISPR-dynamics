@@ -1,12 +1,12 @@
 # before use run in command shell:
 # pip install pipenv
 # pipenv install requests
+# pipenv install lxml
 
 import requests
 import re
-from lxml import etree
 
-r = requests.get('http://immunet.cn/hmmcas') # this is optional
+#r = requests.get('http://immunet.cn/hmmcas') # this is optional
 
 url = "http://immunet.cn/hmmcas/upload2.php"
 payload = {'sequence': '>gi|347755963|ref|YP_004863525.1| hypothetical protein [Candidatus Chloracidobacterium thermophilum B] MSDTTPLPFPPHYDPIQTVAAEYPGTAPQALFAPAMAWQQAHSLRPAADDARRAHLLVIDMQVDFCFPSGTLYVAGRSGTGGTDALRRTVEFMYRYLPWISEITCTLDSHVPGQVFFPGAHLTEDGAPVAPHTVITAADYRAGRYRPNPALAAQLGVTTEWLTHQVTDYCTRLEATGKYALYVWPYHCLVGTAGHRLAGVLADACLFHAFARGAANAPVLKGDSPLTENYSVFAPEVTTCWDGQPMPGAVRHEALLKRLLTADVILVAGLASSHCVAASVADLLAFVQEHNPYLAHRIVLLRDAMAPVVVPGADFTDAAEQALASFEAAGARVLTTDDPVEAWWG', 
@@ -32,19 +32,32 @@ r = requests.post(url, files=files)
 matches = re.findall("(http\:\/\/i\.uestc\.edu\.cn\/hmmcas\/operon\.php\?qsf=ToSlide.\d+\&tb=Table\d+\&sp=3)", r.text)
 if len(matches):
 	print("found " + matches[0])
-else:
-	return
-url2 = matches[0]
 
-table = requests.get(url2)
+	url2 = matches[0]
 
+	table = requests.get(url2)
 
 
-parser = etree.HTMLParser()
-tree = etree.fromstring(table, parser)
-results = tree.xpath('//tr/td[position()=2]')
 
-print 'Column 2\n========'
-for r in results:
-    print r.text
+from BeautifulSoup import BeautifulSoup
+
+soup = BeautifulSoup(table)
+
+for row in soup.findAll('table')[0].tbody.findAll('tr'):
+    first_column = row.findAll('th')[0].contents
+    third_column = row.findAll('td')[2].contents
+    print (first_column, third_column)
+
+
+
+
+# from lxml import etree
+# 	parser = etree.HTMLParser()
+# 	tree = etree.fromstring(table, parser)
+# 	results = tree.xpath('//tr/td[position()=2]')
+
+# 	print 'Column 2\n========'
+# 	for r in results:
+# 	    print r.text
+
 
